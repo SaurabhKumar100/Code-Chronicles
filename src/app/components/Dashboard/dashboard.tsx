@@ -33,22 +33,22 @@ const Dashboard = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [popoverData, setPopoverData] = useState<Notices[]>([]);
 
-  const debouncedSearch = useDebounce(search, 500);
-  useEffect(() => {
-    async function fetchBlogs() {
-      setLoading(true);
+  // const debouncedSearch = useDebounce(search, 500);
+  // useEffect(() => {
+  //   async function fetchBlogs() {
+  //     setLoading(true);
 
-      const data = await fetch(
-        `https://ws-public.interpol.int/notices/v1/red?forename=${debouncedSearch}&resultPerPage=160&page=200`
-      ).then((res) => res.json());
+  //     const data = await fetch(
+  //       `https://ws-public.interpol.int/notices/v1/red?forename=${debouncedSearch}&resultPerPage=160&page=200`
+  //     ).then((res) => res.json());
 
-      // setNotice(data._embedded.notices);
-      setPopoverData(data._embedded.notices); // Update popover data
-      setLoading(false);
-    }
+  //     // setNotice(data._embedded.notices);
+  //     setPopoverData(data._embedded.notices); // Update popover data
+  //     setLoading(false);
+  //   }
 
-    if (debouncedSearch) fetchBlogs();
-  }, [debouncedSearch]);
+  //   if (debouncedSearch) fetchBlogs();
+  // }, [debouncedSearch]);
 
   return (
     <Box>
