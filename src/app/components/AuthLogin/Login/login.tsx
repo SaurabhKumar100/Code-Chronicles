@@ -13,40 +13,36 @@ import Logo from "../../../../../public/assets/Logo.svg";
 import Google from "../../../../../public/assets/google.svg";
 import { signIn } from "next-auth/react";
 
-interface Props {
-  serverDate: string;
-}
-
-const Login: React.FC<Props> = ({ serverDate }) => {
+const Login = () => {
   const handleSignIn = async () => {
     await signIn("google", {
       callbackUrl: "http://localhost:3000/dashboard",
     });
   };
 
-  const [userTime, setUserTime] = useState(serverDate);
+  // const [userTime, setUserTime] = useState(serverDate);
 
-  useEffect(() => {
-    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  // useEffect(() => {
+  //   const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    const interval = setInterval(() => {
-      const formattedTime = new Intl.DateTimeFormat(undefined, {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
-        timeZone: userTimezone,
-      }).format(new Date());
+  //   const interval = setInterval(() => {
+  //     const formattedTime = new Intl.DateTimeFormat(undefined, {
+  //       year: "numeric",
+  //       month: "long",
+  //       day: "numeric",
+  //       hour: "numeric",
+  //       minute: "numeric",
+  //       second: "numeric",
+  //       timeZone: userTimezone,
+  //     }).format(new Date());
 
-      setUserTime(formattedTime);
-    }, 1000);
+  //     setUserTime(formattedTime);
+  //   }, 1000);
 
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, []);
 
   return (
     <Box className="bg-[#f1f7f7]">
@@ -57,7 +53,6 @@ const Login: React.FC<Props> = ({ serverDate }) => {
             <Typography className="text-[#62e048] text-xl font-semibold">
               Code<span>_Chronicle</span>
             </Typography>
-            
           </Box>
         </Box>
       </Box>
@@ -79,11 +74,11 @@ const Login: React.FC<Props> = ({ serverDate }) => {
                 Hi there!
               </Typography>
             }
-            subheader={
-              <Typography className="text-gray-400 text-sm font-semibold">
-                {userTime}
-              </Typography>
-            }
+            // subheader={
+            //   <Typography className="text-gray-400 text-sm font-semibold">
+            //     {userTime}
+            //   </Typography>
+            // }
           />
 
           <Box className="w-full flex flex-col px-8">
