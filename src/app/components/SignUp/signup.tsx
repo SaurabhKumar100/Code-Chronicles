@@ -3,11 +3,12 @@ import React from "react";
 import Logo from "../../../../public/assets/Logo.svg";
 import Google from "../../../../public/assets/google.svg";
 import Image from "next/image";
-import { signIn } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import Link from "next/link";
 
 const SignUp = () => {
+  const { data: session } = useSession();
   return (
     <Box className="w-full h-screen flex item-start bg-[#f1f7f7]">
       <Box className="relative w-1/2 h-full flex flex-col">
@@ -114,7 +115,7 @@ const SignUp = () => {
             <button
               onClick={async () => {
                 await signIn("google", {
-                  callbackUrl: "http://localhost:3000/dashboard",
+                  callbackUrl: `http://localhost:3000/${session?.user?.name}/dashboard`,
                 });
               }}
               className="text-black font-semibold my-2 p-2 border-2 border-black rounded-md flex "

@@ -1,0 +1,191 @@
+"use client";
+import React, { useState } from "react";
+import Logo from "../../../../public/assets/Logo.svg";
+import Google from "../../../../public/assets/google.svg";
+import Image from "next/image";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { signIn } from "next-auth/react";
+import { Box, Button, TextField, Typography } from "@mui/material";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import Link from "next/link";
+import { CustomSwitch } from "../CustomSwitch/switch";
+
+interface formData {
+  // firstName: string;
+  // lastName: string;
+  email: string;
+  password: string;
+  // confirmPassword: string;
+}
+
+const schema = yup
+  .object({
+    // firstName: yup.string().required("First name is required"),
+    // lastName: yup.string().required("Last name is required"),
+    email: yup
+      .string()
+      .email("enter a valid email")
+      .required("Email is required"),
+    password: yup
+      .string()
+      .min(8, "Password min length is 8")
+      .matches(
+        /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]+$/,
+        "Password must contain at least one uppercase letter, one number, and one special character"
+      )
+      .required("password is required"),
+    // confirmPassword: yup
+    //   .string()
+    //   .required("Confirm password is required")
+    //   .oneOf([yup.ref("password")], "Confirm password must be same"),
+  })
+  .required();
+
+const Login = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const onSubmit: SubmitHandler<formData> = (data) => {
+    console.log("Form data submitted:", data);
+  };
+
+  return (
+    <Box className="w-full h-screen flex item-start bg-[#f1f7f7] px-2">
+      <Box className="hidden md:flex md:w-1/2 h-full">
+        <Box className="relative w-1/2 h-full flex flex-col">
+          <Box className="absolute top-[25%] left-[5%] flex flex-col ">
+            <Box className="flex items-center pr-8">
+              <Image
+                src={Logo}
+                alt="Logo"
+                height={150}
+                width={150}
+                className="pr-5 pb-8"
+              />
+              <Box className="pt-12">
+                <Typography className="text-[#62e048] text-3xl font-extrabold">
+                  Welcome to Code<span>_Chronicle</span>
+                </Typography>
+                <Typography
+                  variant="h4"
+                  className="text-black text-2xl font-bold my-4"
+                >
+                  Your Ultimate Destination for Tech Enthusiasts
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+      {/* <Box className="hidden md:flex md:w-1/2"></Box> Empty placeholder */}
+      <Box className="w-full md:w-1/2 flex flex-col items-center justify-center">
+        <Box
+          sx={{ maxWidth: "500px", width: "100%" }}
+          className="bg-white rounded-md p-4"
+        >
+          <Box className="flex gap-2 items-center mb-4">
+            <Image src={Logo} height={50} width={50} alt="logo" />
+            <Typography variant="body1" className="text-green-500">
+              Welcome
+            </Typography>
+          </Box>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col gap-4"
+          >
+            {/* <TextField
+              id="firstName"
+              label="First Name"
+              variant="outlined"
+              {...register("firstName")}
+              error={!!errors.firstName}
+              helperText={errors.firstName ? errors.firstName.message : ""}
+            /> */}
+            {/* 
+            <TextField
+              id="lastName"
+              label="Last Name"
+              variant="outlined"
+              {...register("lastName")}
+              error={!!errors.lastName}
+              helperText={errors.lastName ? errors.lastName.message : ""}
+            /> */}
+
+            <TextField
+              id="email"
+              label="Email"
+              variant="outlined"
+              {...register("email")}
+              error={!!errors.email}
+              helperText={errors.email ? errors.email.message : ""}
+            />
+
+            <TextField
+              id="password"
+              label="Password"
+              variant="outlined"
+              {...register("password")}
+              type="password"
+              error={!!errors.password}
+              helperText={errors.password ? errors.password.message : ""}
+            />
+            {/* 
+            <TextField
+              id="confirmPassword"
+              label="Confirm Password"
+              variant="outlined"
+              {...register("confirmPassword")}
+              type="password"
+              error={!!errors.confirmPassword}
+              helperText={
+                errors.confirmPassword ? errors.confirmPassword.message : ""
+              }
+            /> */}
+
+            <Button
+              type="submit"
+              variant="contained"
+              className="text-white font-semibold rounded-md bg-green-500 hover:bg-green-600 hover:text-white py-3"
+            >
+              Login
+            </Button>
+            <Button
+            onClick={async () => {
+                await signIn("google", {
+                  callbackUrl: "http://localhost:3000/dashboard",
+                });
+              }}
+            
+              className="text-white font-semibold rounded-md bg-black hover:bg-black hover:text-white py-3"
+              variant="contained"
+              startIcon={
+                <Image src={Google} alt="icon" width={20} height={20}></Image>
+              }
+            >
+              Continue with Google
+            </Button>
+            <Box className="w-full flex gap-1 items-center justify-center mt-5">
+              <Typography variant="body2" className="text-black">
+                don&apos;t have an account?
+              </Typography>
+              <Link
+                href="/signup"
+                className=" text-black font-semibold underline underline-offset-2 cursor-pointer"
+              >
+                Signup here for free
+              </Link>
+            </Box>
+          </form>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
+export default Login;
