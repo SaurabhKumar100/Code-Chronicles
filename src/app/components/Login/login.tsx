@@ -110,7 +110,7 @@ const Login = () => {
                 </Typography>
                 <Typography
                   variant="h4"
-                  className="text-black text-2xl font-bold my-4"
+                  className="text-black text-4xl font-bold my-4"
                 >
                   Your Ultimate Destination for Tech Enthusiasts
                 </Typography>
