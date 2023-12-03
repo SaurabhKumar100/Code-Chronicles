@@ -17,6 +17,7 @@ import Logo from "../../../../public/assets/Logo.svg";
 function Navbar() {
   const router = useRouter();
   const { status, data: session } = useSession();
+
   return (
     <Container className="bg-[#E3F4F4] blur-[0.5px] rounded-md shadow-md mt-2 sticky">
       <Toolbar disableGutters>
@@ -56,8 +57,9 @@ function Navbar() {
         {status === "authenticated" ? (
           <Box>
             <button
-              onClick={() => {
-                signOut({ callbackUrl: "http://localhost:3000" });
+              onClick={async () => {
+                await signOut({ callbackUrl: "http://localhost:3000" });
+                localStorage.setItem("visited", "false"); // Reset visited flag to false
               }}
               className="bg-black text-white font-semibold text-sm rounded-md px-6 py-2 mr-3"
             >

@@ -1,5 +1,6 @@
 import "./globals.css";
 import { NextAuthProvider } from "./components/NextAuthProvider/provider";
+import Provider from "@/utils/provider";
 
 export default function RootLayout({
   children,
@@ -8,8 +9,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-primary">
-        <NextAuthProvider>{children}</NextAuthProvider>
+      <body className="bg-primaryBackground">
+        <Provider>
+          <NextAuthProvider>{children}</NextAuthProvider>
+        </Provider>
       </body>
     </html>
   );
