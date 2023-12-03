@@ -15,7 +15,7 @@ const Dashboard = () => {
   // ...
 
   useEffect(() => {
-    const visited = localStorage.getItem("visited");
+    const visited = localStorage.getItem("visited"); //add
     if (session && visited !== "true") {
       setOpen(true);
       localStorage.setItem("visited", "true");
