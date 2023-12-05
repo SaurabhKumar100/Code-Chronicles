@@ -197,7 +197,7 @@ const Login = () => {
             </Snackbar>
             <Box className="w-full flex items-center justify-center mt-5 gap-3">
               <Typography variant="body2" className="text-black">
-                Don't have an account?
+                Don`&apos;`t have an account?
               </Typography>
               <Link
                 href="/signup"
