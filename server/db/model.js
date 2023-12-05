@@ -4,11 +4,24 @@ require("dotenv").config();
 mongoose
   .connect(process.env.MONGO_URL)
   .then(() => {
-    console.log("DB connection successfull");
+    console.log("DB connection successful");
   })
   .catch((err) => {
     console.log(err.message);
   });
+
+const userSchema = new mongoose.Schema({
+  firstName: String,
+  lastName: String,
+  email: {
+    type: String,
+    unique: true,
+  },
+  password: {
+    type: String,
+  },
+  profileImage: String,
+});
 
 const messageSchema = mongoose.Schema({
   message: String,
@@ -16,4 +29,7 @@ const messageSchema = mongoose.Schema({
   date: Date,
 });
 
-module.exports = mongoose.model("messages", messageSchema);
+const User = mongoose.model("User", userSchema);
+const Message = mongoose.model("Message", messageSchema);
+
+module.exports = { User, Message };
