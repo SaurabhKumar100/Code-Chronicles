@@ -9,7 +9,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-primaryBackground">
+      <body className="bg-primary">
         <Provider>
           <NextAuthProvider>{children}</NextAuthProvider>
         </Provider>

@@ -1,10 +1,9 @@
 "use client";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import Image from "next/image";
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Logo from "../../../../public/assets/Logo.svg";
 import { useSession } from "next-auth/react";
-import Navbar from "../Navbar/navbar";
 import {
   Box,
   Button,
@@ -30,89 +29,89 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 const HomePage = () => {
   const router = useRouter();
   const { status, data: session } = useSession();
+  const [isCardVisible, setCardVisible] = useState(false);
+
   useEffect(() => {
     if (status === "authenticated") {
-      // Redirect to dashboard if authenticated
       router.replace("/dashboard");
     }
   }, [status, router]);
 
-  const [isCardVisible, setCardVisible] = useState(false); // Initialize state
-
   const handlePopover = () => {
-    setCardVisible(!isCardVisible); // Toggle the visibility of the card
+    setCardVisible(!isCardVisible);
   };
 
   return (
     <Fragment>
-      <Box className="mb-16">
-        <Navbar />
-      </Box>
-      <Container disableGutters>
-        <Grid container rowSpacing={2} spacing={2}>
-          <Grid item xs={6}>
-            <Box className="bg-transparent">
-              <Box className="mb-8">
-                <Typography className="text-black text-5xl font-semibold">
-                  Your Essential Hub for
-                </Typography>
-                <Typography className="text-[#62e048] text-5xl py-2 font-semibold">
-                  Tech Enthusiasts
-                </Typography>
-                <Typography className="text-black text-5xl font-semibold">
-                  Explore
-                </Typography>
-
-                <Typography className="text-black text-5xl py-2 font-semibold">
-                  In-Depth Insights Here.
-                </Typography>
-                <Typography className="text-slate-400 text-xl pt-4 font-medium">
-                  Welcome to a world of technical wonder and knowledge.
-                </Typography>
-                <Typography className="text-slate-400 text-xl font-medium">
-                  Dive into our articles to unlock the limitless possibilities
-                  of technology.
-                </Typography>
-              </Box>
-
-              <Box className="flex gap-4">
-                <Box>
-                  <Button
-                    variant="contained"
-                    startIcon={<LockIcon />}
-                    onClick={() => {
-                      router.push("/login");
-                    }}
-                    className="bg-black text-white font-semibold text-sm rounded-md px-8 py-4 MuiButton-root hover:bg-[#323232]"
-                  >
-                    Login
-                  </Button>
-                </Box>
-                <Box>
-                  <Box>
-                    <Button
-                      variant="contained"
-                      endIcon={<PlayArrowIcon />}
-                      onClick={() => {
-                        router.push("/signup");
-                      }}
-                      className="bg-blue-600 text-white font-semibold text-sm rounded-md px-8 py-4"
-                    >
-                      Sign Up
-                    </Button>
-                  </Box>
-                </Box>
+      <Container className="mt-10">
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <Box p={4}>
+              <Image
+                src={Logo}
+                alt="Logo"
+                height={150}
+                width={150}
+                className="pb-8"
+              />
+              <Typography
+                variant="h3"
+                component="h1"
+                gutterBottom
+                className="text-[#62e048]"
+              >
+                Welcome to Code<span>_Chronicle</span>
+              </Typography>
+              <Typography variant="h2" component="h1" gutterBottom>
+                Your Essential Hub for
+              </Typography>
+              <Typography
+                variant="h2"
+                component="h1"
+                gutterBottom
+                style={{ color: "#62e048" }}
+              >
+                Tech Enthusiasts
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Welcome to a world of technical wonder and knowledge. Dive into
+                our articles to unlock the limitless possibilities of
+                technology.
+              </Typography>
+              <Box className="flex items-center mt-5">
+                <Button
+                  variant="contained"
+                  className="bg-black text-white font-semibold text-sm rounded-md px-6 py-2 mr-3 normal-case hover:bg-slate-700"
+                  startIcon={<LockIcon />}
+                  onClick={() => router.push("/login")}
+                >
+                  Login
+                </Button>
+                <Button
+                  variant="contained"
+                  startIcon={<PlayArrowIcon />}
+                  className="bg-black text-white font-semibold text-sm rounded-md px-6 py-2 mr-3 normal-case hover:bg-slate-700"
+                  onClick={() => router.push("/signup")}
+                >
+                  Sign Up
+                </Button>
               </Box>
             </Box>
           </Grid>
 
-          <Grid item xs={6}>
-            <Paper elevation={1} className="bg-white relative group">
+          <Grid item xs={12} md={6} className="md:mt-8">
+            <Paper elevation={1} className="relative group">
               <Box className="relative">
-                <Image src={blog1} alt="image" height={300} width={600} />
-                <Box className="bg-white absolute rounded-lg bottom-2 left-2">
-                  <IconButton onClick={handlePopover} className="text-black">
-                    <VisibilityIcon />
+                <Image
+                  src={blog1}
+                  alt="image"
+                  layout="responsive"
+                  width={600}
+                  height={300}
+                />
+                <Box className="absolute rounded-lg bottom-2 left-2">
+                  <IconButton onClick={handlePopover}>
+                    <VisibilityIcon className="text-white" />
                   </IconButton>
                 </Box>
                 {isCardVisible && (
@@ -162,19 +161,33 @@ const HomePage = () => {
             </Paper>
           </Grid>
 
-          <Grid item xs={12}></Grid>
-          <Grid item xs={4}>
-            <Paper elevation={1} className="bg-white">
-              <Typography className="text-black font-semibold">
+          <Grid item xs={12} md={4}>
+            <Paper elevation={1} className="p-4">
+              <Typography
+                variant="h5"
+                component="h2"
+                gutterBottom
+                style={{ color: "#000", fontWeight: "bold" }}
+              >
                 Newsletter
               </Typography>
+              {/* Newsletter Content */}
+              {/* ... */}
             </Paper>
           </Grid>
-          <Grid item xs={8}>
-            <Paper elevation={1} className="bg-white">
-              <Typography className="text-black font-semibold">
+
+          <Grid item xs={12} md={8}>
+            <Paper elevation={1} className="p-4">
+              <Typography
+                variant="h5"
+                component="h2"
+                gutterBottom
+                style={{ color: "#000", fontWeight: "bold" }}
+              >
                 Trending Articles
               </Typography>
+              {/* Trending Articles Content */}
+              {/* ... */}
             </Paper>
           </Grid>
         </Grid>
