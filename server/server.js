@@ -58,7 +58,7 @@ app.get("/api/user/message/delete", async function (req, res) {
   }
 });
 
-app.get("/api/user/message/create", async function (req, res) {
+app.get("/", async function (req, res) {
   try {
     const createdMessage = await Message.create({
       message: "hi! there",
