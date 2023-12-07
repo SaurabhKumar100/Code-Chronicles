@@ -29,6 +29,10 @@ app.use(express.json());
 
 //apis
 
+app.get("/", (req, res) => {
+  res.send("Hello World");
+});
+
 app.get("/api/messages/all", async function (req, res) {
   try {
     const allMessages = await Message.find();
@@ -58,7 +62,7 @@ app.get("/api/user/message/delete", async function (req, res) {
   }
 });
 
-app.get("/", async function (req, res) {
+app.get("/api/user/message/create", async function (req, res) {
   try {
     const createdMessage = await Message.create({
       message: "hi! there",
