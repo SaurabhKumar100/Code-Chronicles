@@ -1,4 +1,3 @@
 {
-  "rewrites": [{ "source": "/api/(.*)", "destination": "/server/$1" }],
-  "functions": { "api/*.js": { "runtime": "vercel-node@latest" } }
+  "rewrites": [{ "source": "/api/(.*)", "destination": "/server/$1" }]
 }
