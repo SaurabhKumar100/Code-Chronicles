@@ -33,11 +33,11 @@ const schema = yup
       .required("Email is required"),
     password: yup
       .string()
-      .min(8, "Password min length is 8")
-      .matches(
-        /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]+$/,
-        "Password must contain at least one uppercase letter, one number, and one special character"
-      )
+      // .min(8, "Password min length is 8")
+      // .matches(
+      //   /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]+$/,
+      //   "Password must contain at least one uppercase letter, one number, and one special character"
+      // )
       .required("Password is required"),
   })
   .required();
@@ -53,22 +53,20 @@ const Login = () => {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
   });
 
-  const [open, setOpen] = useState(false);
-
-  const toggleSnackbar = () => {
-    setOpen((prev) => !prev);
-  };
+  const [message, setMessage] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   useEffect(() => {
     if (session && session.user && session.user.name) {
-      toggleSnackbar();
+      setMessage("Logging you in");
+      setSnackbarOpen(true);
       const nameParts = session.user.name.split(" ");
       const firstName = nameParts[0];
       const userName = firstName.toLowerCase();
       const dashboardUrl = `/${userName}/dashboard`;
       router.push(dashboardUrl);
     }
-  }, [session, router]);
+  }, [session]);
 
   const {
     register,
@@ -89,11 +87,14 @@ const Login = () => {
       // Store the token and user information in local storage
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
-
+      setMessage("Logging you in");
+      setSnackbarOpen(true);
       // Redirect to user's dashboard based on their name
       const userName = user.firstName.toLowerCase(); // Assuming 'user.name' contains the username
       router.push(`/${userName}/dashboard`); // Redirects to /user.name/dashboard
     } catch (error) {
+      setMessage("Invalid Credentials");
+      setSnackbarOpen(true);
       // Handle login failure (display error, etc.)
       console.error("Login failed:", error);
     }
@@ -162,6 +163,7 @@ const Login = () => {
             >
               Login
             </Button>
+
             <Box className="w-full flex items-center justify-center relative py-2">
               <Box className="w-full h-[1px] bg-black"></Box>
               <Typography className="absolute text-lg text-black bg-white px-0.5">
@@ -181,20 +183,7 @@ const Login = () => {
             >
               Continue with Google
             </Button>
-            <Snackbar
-              open={open}
-              anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-              autoHideDuration={6000}
-              onClose={toggleSnackbar}
-            >
-              <Alert
-                severity="info"
-                action={<CircularProgress size={24} color="inherit" />}
-                className="flex items-center"
-              >
-                Logging you in...
-              </Alert>
-            </Snackbar>
+
             <Box className="w-full flex items-center justify-center mt-5 gap-3">
               <Typography variant="body2" className="text-black">
                 Don`&apos;`t have an account?
@@ -209,6 +198,24 @@ const Login = () => {
           </form>
         </Box>
       </Box>
+      <Snackbar
+        open={snackbarOpen}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        autoHideDuration={4000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert
+          severity={message === "Invalid Credentials" ? "error" : "info"}
+          action={
+            message === "Logging you in" ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : null
+          }
+          className="flex items-center"
+        >
+          {message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

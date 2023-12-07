@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Logo from "../../../../public/assets/Logo.svg";
 import Google from "../../../../public/assets/google.svg";
 import Image from "next/image";
-import { useSession, signIn } from "next-auth/react";
+import { useSession, signIn, signOut, getSession } from "next-auth/react";
 import {
   Box,
   Button,
@@ -20,6 +20,7 @@ import axios from "axios";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
+import generator from "generate-password";
 
 interface FormData {
   firstName: string;
@@ -53,10 +54,12 @@ const schema = yup
   .required();
 
 const SignUp = () => {
-  const { data: session } = useSession();
+  const { status, data: session } = useSession();
+
   const router = useRouter();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [message, setMessage] = useState<string>("");
+  const [googlePassword, setGooglePassword] = useState("");
 
   const {
     register,
@@ -66,90 +69,69 @@ const SignUp = () => {
     resolver: yupResolver(schema),
   });
 
-  const [open, setOpen] = useState(false);
-
-  const toggleSnackbar = () => {
-    setOpen((prev) => !prev);
-    setMessage("Loggin you in");
-  };
+  useEffect(() => {
+    setGooglePassword(
+      generator.generate({
+        length: 12,
+        numbers: true,
+        symbols: true,
+        uppercase: true,
+        lowercase: true,
+        strict: true,
+      })
+    );
+  }, []);
 
   useEffect(() => {
-    if (session && session.user && session.user.name) {
-      toggleSnackbar();
-      console.log(session);
-      const nameParts = session.user.name.split(" ");
-      const firstName = nameParts[0];
-      const userName = firstName.toLowerCase();
-      const dashboardUrl = `/${userName}/dashboard`;
-      router.push(dashboardUrl);
-      const registerUser = async (session: Session) => {
-        try {
-          // If logged in via Google, include Google-related data in the registration
-          const googleUserData = {
-            name: session?.user?.name,
-            email: session?.user?.email,
-            image: session?.user?.image,
-          };
-
-          // Merge Google user data with form data for registration
-          const userDataForRegistration = { ...googleUserData };
-
-          // Send merged data to a specific endpoint for Google registrations
-          await axios.post(
-            "http://localhost:5000/api/register-google",
-            userDataForRegistration
-          );
-        } catch (error) {
-          setMessage("User already exists");
-          setSnackbarOpen(true);
-        }
-      };
-      registerUser(session);
+    if (status === "authenticated") {
+      handleGoogleRegistration();
     }
-  }, [session, router]);
+  }, [status]);
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
-    try {
-      // Check if the user is logged in via Google
-      if (session && session.user && session.user.name) {
-        // If logged in via Google, include Google-related data in the registration
+  const handleGoogleRegistration = async () => {
+    if (session && session.user && session.user.name) {
+      try {
         const googleUserData = {
           name: session.user.name,
           email: session.user.email,
+          passwordString: googlePassword,
+          password: googlePassword,
           image: session.user.image,
         };
 
-        // Merge Google user data with form data for registration
-        const userDataForRegistration = { ...data, ...googleUserData };
+        const userDataForRegistration = { ...googleUserData };
 
-        // Send merged data to a specific endpoint for Google registrations
         await axios.post(
           "http://localhost:5000/api/register-google",
           userDataForRegistration
         );
-      } else {
-        // If not logged in via Google, handle regular form submission here
-        // This part of the code is for regular signups without Google
-        // Send form data to the existing endpoint for non-Google registrations
-        await axios.post("http://localhost:5000/api/register", data);
         setMessage("Registered");
-        setSnackbarOpen(true);
+        setSnackbarOpen(true); // Set snackbar to be open
+        // Check if localStorage is available (client-side)
         router.push("/login");
+      } catch (error) {
+        console.error("Error during API call:", error);
+        setMessage("User already exists");
+        setSnackbarOpen(true); // Set snackbar to be open
+        signOut({ callbackUrl: "/login" });
       }
+    }
+  };
+
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    try {
+      // If not logged in via Google, handle regular form submission here
+      // This part of the code is for regular signups without Google
+      // Send form data to the existing endpoint for non-Google registrations
+      await axios.post("http://localhost:5000/api/register", data);
+      setMessage("Registered");
+      setSnackbarOpen(true);
+      router.push("/login");
     } catch (error) {
       setMessage("User already exists");
       setSnackbarOpen(true);
     }
   };
-
-  // const onSubmit: SubmitHandler<FormData> = async (data) => {
-  //   try {
-  //     await axios.post(" http://localhost:5000/api/register", data);
-  //   } catch (error) {
-  //     setMessage("User already exists");
-  //     setSnackbarOpen(true);
-  //   }
-  // };
 
   const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props,
@@ -251,6 +233,27 @@ const SignUp = () => {
               Signup
             </Button>
 
+            <Box className="w-full flex items-center justify-center relative py-2">
+              <Box className="w-full h-[1px] bg-black"></Box>
+              <Typography className="absolute text-lg text-black bg-white px-0.5">
+                or
+              </Typography>
+            </Box>
+            <Button
+              // type="submit"
+              onClick={() => {
+                // use .then() to handle the promise
+                signIn("google");
+              }}
+              className="text-white font-semibold rounded-md bg-black hover:bg-black hover:text-white py-3"
+              variant="contained"
+              startIcon={
+                <Image src={Google} alt="icon" width={20} height={20} />
+              }
+            >
+              Continue with Google
+            </Button>
+
             <Snackbar
               open={snackbarOpen}
               anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
@@ -266,40 +269,6 @@ const SignUp = () => {
                     <CircularProgress size={24} color="inherit" />
                   ) : null
                 }
-                className="flex items-center"
-              >
-                {message}
-              </Alert>
-            </Snackbar>
-
-            <Box className="w-full flex items-center justify-center relative py-2">
-              <Box className="w-full h-[1px] bg-black"></Box>
-              <Typography className="absolute text-lg text-black bg-white px-0.5">
-                or
-              </Typography>
-            </Box>
-            <Button
-              type="submit"
-              onClick={async () => {
-                await signIn("google");
-              }}
-              className="text-white font-semibold rounded-md bg-black hover:bg-black hover:text-white py-3"
-              variant="contained"
-              startIcon={
-                <Image src={Google} alt="icon" width={20} height={20} />
-              }
-            >
-              Continue with Google
-            </Button>
-            <Snackbar
-              open={open}
-              anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-              autoHideDuration={6000}
-              onClose={toggleSnackbar}
-            >
-              <Alert
-                severity="info"
-                action={<CircularProgress size={24} color="inherit" />}
                 className="flex items-center"
               >
                 {message}
