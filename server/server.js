@@ -4,6 +4,18 @@ const app = express();
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+require("dotenv").config();
+
+// Create a nodemailer transporter
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  secure: true,
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
 
 //Database
 const { User, Message } = require("./db/model");
@@ -122,9 +134,29 @@ app.post("/api/login", async (req, res) => {
 });
 
 // POST route to handle registration via Google
+
+// Function to send an email with Nodemailer
+const sendEmail = async (email, password) => {
+  try {
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: email,
+      subject: "Your Password for SignUp",
+      text: `Your password for SignUp`,
+      html: `<b>password for code chronicles ${password}</b>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log("Email sent successfully!");
+  } catch (error) {
+    console.error("Error sending email:", error);
+    throw new Error("Failed to send email");
+  }
+};
+
 app.post("/api/register-google", async (req, res) => {
   try {
-    const { name, email, image } = req.body; // Assuming you receive this data from Google authentication
+    const { name, email, password, passwordString, image } = req.body; // Assuming you receive this data from Google authentication
 
     // Check if the user already exists in your database based on their Google ID
     let existingUser = await User.findOne({ email });
@@ -133,23 +165,30 @@ app.post("/api/register-google", async (req, res) => {
       return res.status(400).json({ error: "User already exists" });
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
     // Create a new user instance using Mongoose schema
     const newUser = new User({
       firstName: name.split(" ")[0], // Assuming you want to extract the first name
       lastName: name.split(" ")[1] || "", // Extract last name if available
       email,
+      passwordString,
+      password: hashedPassword,
       profileImage: image || "", // Store profile image URL if available
     });
 
     // Save the new user to the database
     await newUser.save();
 
+    // Sending an email to the user after successfully registering
+    await sendEmail(email, passwordString); // Assuming sendEmail is your email sending function
+
     // Respond with success message or user data
-    return res
-      .status(201)
-      .json({ message: "User registered successfully", user: newUser });
+    return res.status(201).json({
+      message: "User registered successfully",
+      user: { firstName, lastName, email, profileImageS },
+    });
   } catch (error) {
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error });
   }
 });
 
