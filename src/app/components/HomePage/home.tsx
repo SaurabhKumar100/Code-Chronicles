@@ -81,7 +81,8 @@ const HomePage = () => {
               <Box className="flex items-center mt-5">
                 <Button
                   variant="contained"
-                  className="bg-black text-white font-semibold text-sm rounded-md px-6 py-2 mr-3 normal-case hover:bg-slate-700 "
+                  // className="bg-black text-white font-semibold text-sm rounded-md px-6 py-2 mr-3 normal-case hover:bg-slate-700 "
+                  className="bg-black text-white normal-case"
                   startIcon={<LockIcon />}
                   onClick={() => router.push("/login")}
                 >
@@ -90,7 +91,8 @@ const HomePage = () => {
                 <Button
                   variant="contained"
                   startIcon={<PlayArrowIcon />}
-                  className="bg-black text-white font-semibold text-sm rounded-md px-6 py-2 mr-3 normal-case hover:bg-slate-700"
+                  // className="bg-black text-white font-semibold text-sm rounded-md px-6 py-2 mr-3 normal-case hover:bg-slate-700"
+                  className="bg-black text-white normal-case"
                   onClick={() => router.push("/signup")}
                 >
                   Sign Up
